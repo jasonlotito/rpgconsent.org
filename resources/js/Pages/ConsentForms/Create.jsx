@@ -127,7 +127,7 @@ export default function Create({ topics, movieRatings }) {
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                     placeholder="e.g., My D&D Preferences, Horror Campaign Limits"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                     required
                                 />
                                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
@@ -162,7 +162,7 @@ export default function Create({ topics, movieRatings }) {
                                 <select
                                     value={data.movie_rating}
                                     onChange={(e) => setData('movie_rating', e.target.value)}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 >
                                     <option value="">Select a rating</option>
                                     {movieRatings.map((rating) => (
@@ -181,7 +181,7 @@ export default function Create({ topics, movieRatings }) {
                                         type="text"
                                         value={data.movie_rating_other}
                                         onChange={(e) => setData('movie_rating_other', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                     />
                                     {errors.movie_rating_other && <p className="mt-1 text-sm text-red-600">{errors.movie_rating_other}</p>}
                                 </div>
@@ -339,7 +339,7 @@ export default function Create({ topics, movieRatings }) {
                                                         }
                                                     }}
                                                     placeholder="Enter custom topic name..."
-                                                    className="flex-1 text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                                     autoFocus
                                                 />
                                                 <button
@@ -397,7 +397,7 @@ export default function Create({ topics, movieRatings }) {
                                 value={data.follow_up_response}
                                 onChange={(e) => setData('follow_up_response', e.target.value)}
                                 rows="4"
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="Any additional topics, concerns, or preferences..."
                             />
                         </div>
@@ -406,14 +406,14 @@ export default function Create({ topics, movieRatings }) {
                         <div className="flex justify-end space-x-4">
                             <a
                                 href="/consent-forms"
-                                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded"
+                                className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Cancel
                             </a>
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded disabled:opacity-50"
+                                className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {processing ? 'Creating...' : 'Create Consent Form'}
                             </button>

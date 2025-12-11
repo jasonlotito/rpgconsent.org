@@ -2,10 +2,10 @@
 
 /**
  * RPG Consent Topics Configuration
- * 
+ *
  * This file contains all the default consent topics from the RPG Consent Checklist.
  * Topics are organized by category and represent common themes that may appear in RPG games.
- * 
+ *
  * Each topic can be rated as:
  * - Green: Enthusiastic consent; bring it on!
  * - Yellow: Okay if veiled or offstage; might be okay onstage but requires discussion ahead of time; uncertain
@@ -91,6 +91,7 @@ return [
         'G',
         'PG',
         'PG-13',
+        'R',
         'NC-17',
         'Other',
     ],

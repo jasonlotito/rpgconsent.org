@@ -9,7 +9,40 @@ import AppLayout from '../../Layouts/AppLayout';
  */
 export default function Edit({ form, topics, movieRatings }) {
     const consentForm = form;
-    const responses = form.responses || [];
+    const existingResponses = form.responses || [];
+
+    // Initialize responses: merge existing responses with predefined topics
+    const initializeResponses = () => {
+        const initialResponses = [];
+
+        // Add all predefined topics with their saved values or default to green
+        Object.entries(topics).forEach(([category, topicList]) => {
+            topicList.forEach((topic) => {
+                const existingResponse = existingResponses.find(
+                    (r) => r.topic_category === category && r.topic_name === topic && !r.is_custom
+                );
+                initialResponses.push({
+                    topic_category: category,
+                    topic_name: topic,
+                    comfort_level: existingResponse?.comfort_level || 'green',
+                    is_custom: false,
+                });
+            });
+        });
+
+        // Add all custom entries from existing responses
+        const customResponses = existingResponses.filter((r) => r.is_custom);
+        customResponses.forEach((customResponse) => {
+            initialResponses.push({
+                topic_category: customResponse.topic_category,
+                topic_name: customResponse.topic_name,
+                comfort_level: customResponse.comfort_level,
+                is_custom: true,
+            });
+        });
+
+        return initialResponses;
+    };
 
     const { data, setData, put, processing, errors } = useForm({
         name: consentForm.name || '',
@@ -17,7 +50,7 @@ export default function Edit({ form, topics, movieRatings }) {
         movie_rating: consentForm.movie_rating || '',
         movie_rating_other: consentForm.movie_rating_other || '',
         follow_up_response: consentForm.follow_up_response || '',
-        responses: responses,
+        responses: initializeResponses(),
     });
 
     // State for managing custom entries being added
@@ -352,7 +385,7 @@ export default function Edit({ form, topics, movieRatings }) {
                                                 }
                                             }}
                                             placeholder="Enter custom topic name..."
-                                            className="flex-1 text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                             autoFocus
                                         />
                                         <button
