@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 
 /**
@@ -7,6 +7,12 @@ import AppLayout from '../../Layouts/AppLayout';
  * Lists all consent forms created by the user.
  */
 export default function Index({ forms }) {
+    // Handle delete with confirmation
+    const handleDelete = (formId, formName) => {
+        if (confirm(`Are you sure you want to delete "${formName}"? This action cannot be undone.`)) {
+            router.delete(`/consent-forms/${formId}`);
+        }
+    };
     return (
         <AppLayout>
             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -65,6 +71,12 @@ export default function Index({ forms }) {
                                             >
                                                 Edit
                                             </Link>
+                                            <button
+                                                onClick={() => handleDelete(form.id, form.name || 'Untitled Form')}
+                                                className="text-red-600 hover:text-red-800 font-medium"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

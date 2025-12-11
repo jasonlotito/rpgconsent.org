@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ConsentForm;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -59,6 +60,38 @@ class PublicProfileController extends Controller
                 'google_avatar' => $user->google_avatar,
             ],
             'publicForms' => $formsData,
+        ]);
+    }
+
+    /**
+     * Display a specific public consent form.
+     *
+     * @param string $username
+     * @param int $formId
+     * @return Response
+     */
+    public function showConsentForm(string $username, int $formId): Response
+    {
+        // Find user by username (case-insensitive)
+        $user = User::where('username', strtolower($username))->firstOrFail();
+
+        // Find the consent form and ensure it's public and belongs to this user
+        $consentForm = ConsentForm::where('id', $formId)
+            ->where('user_id', $user->id)
+            ->where('is_public', true)
+            ->with('responses')
+            ->firstOrFail();
+
+        // Group responses by category
+        $responsesByCategory = $consentForm->responses->groupBy('topic_category');
+
+        return Inertia::render('PublicProfile/ShowConsentForm', [
+            'profileUser' => [
+                'username' => $user->username,
+                'google_avatar' => $user->google_avatar,
+            ],
+            'form' => $consentForm,
+            'responsesByCategory' => $responsesByCategory,
         ]);
     }
 }

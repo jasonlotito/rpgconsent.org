@@ -51,7 +51,8 @@ Route::post('/api/check-username', [UsernameValidationController::class, 'checkA
 | Public Profile Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/u/{user}', [PublicProfileController::class, 'show'])->name('public-profile.show');
+Route::get('/u/{username}', [PublicProfileController::class, 'show'])->name('public-profile.show');
+Route::get('/u/{username}/consent-forms/{formId}', [PublicProfileController::class, 'showConsentForm'])->name('public-profile.consent-form.show');
 
 /*
 |--------------------------------------------------------------------------

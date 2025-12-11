@@ -56,17 +56,22 @@ class ConsentFormController extends Controller
      */
     public function store(Request $request)
     {
+        // Get valid movie ratings from config
+        $movieRatings = config('consent_topics.movie_ratings');
+        $movieRatingsRule = 'nullable|in:' . implode(',', $movieRatings);
+
         // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'is_public' => 'boolean',
-            'movie_rating' => 'nullable|in:G,PG,PG-13,NC-17,Other',
+            'movie_rating' => $movieRatingsRule,
             'movie_rating_other' => 'nullable|string|max:255',
             'follow_up_response' => 'nullable|string',
             'responses' => 'required|array',
             'responses.*.topic_category' => 'required|string',
             'responses.*.topic_name' => 'required|string',
             'responses.*.comfort_level' => 'required|in:green,yellow,red',
+            'responses.*.is_custom' => 'boolean',
         ]);
 
         // Create the consent form
@@ -136,17 +141,22 @@ class ConsentFormController extends Controller
         // Ensure user owns this form
         $this->authorize('update', $consentForm);
 
+        // Get valid movie ratings from config
+        $movieRatings = config('consent_topics.movie_ratings');
+        $movieRatingsRule = 'nullable|in:' . implode(',', $movieRatings);
+
         // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'is_public' => 'boolean',
-            'movie_rating' => 'nullable|in:G,PG,PG-13,NC-17,Other',
+            'movie_rating' => $movieRatingsRule,
             'movie_rating_other' => 'nullable|string|max:255',
             'follow_up_response' => 'nullable|string',
             'responses' => 'required|array',
             'responses.*.topic_category' => 'required|string',
             'responses.*.topic_name' => 'required|string',
             'responses.*.comfort_level' => 'required|in:green,yellow,red',
+            'responses.*.is_custom' => 'boolean',
         ]);
 
         // Update the consent form
