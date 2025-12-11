@@ -40,7 +40,8 @@ return new class extends Migration
             $table->index('comfort_level');
 
             // Ensure unique responses per topic per form
-            $table->unique(['consent_form_id', 'topic_category', 'topic_name']);
+            // Custom name to avoid MySQL's 64-character identifier limit
+            $table->unique(['consent_form_id', 'topic_category', 'topic_name'], 'consent_responses_unique');
         });
     }
 

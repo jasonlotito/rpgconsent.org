@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\ConsentFormController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicProfileController;
+use App\Http\Controllers\UsernameValidationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +37,21 @@ Route::get('/', function () {
 */
 Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::post('/auth/google/complete', [SocialiteController::class, 'completeGoogleRegistration'])->name('auth.google.complete');
+
+/*
+|--------------------------------------------------------------------------
+| API Routes (for AJAX calls)
+|--------------------------------------------------------------------------
+*/
+Route::post('/api/check-username', [UsernameValidationController::class, 'checkAvailability'])->name('api.check-username');
+
+/*
+|--------------------------------------------------------------------------
+| Public Profile Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/u/{user}', [PublicProfileController::class, 'show'])->name('public-profile.show');
 
 /*
 |--------------------------------------------------------------------------

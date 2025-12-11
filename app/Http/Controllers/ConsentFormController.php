@@ -59,6 +59,7 @@ class ConsentFormController extends Controller
         // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'is_public' => 'boolean',
             'movie_rating' => 'nullable|in:G,PG,PG-13,NC-17,Other',
             'movie_rating_other' => 'nullable|string|max:255',
             'follow_up_response' => 'nullable|string',
@@ -71,6 +72,7 @@ class ConsentFormController extends Controller
         // Create the consent form
         $form = auth()->user()->consentForms()->create([
             'name' => $validated['name'],
+            'is_public' => $validated['is_public'] ?? false,
             'movie_rating' => $validated['movie_rating'] ?? null,
             'movie_rating_other' => $validated['movie_rating_other'] ?? null,
             'follow_up_response' => $validated['follow_up_response'] ?? null,
@@ -137,6 +139,7 @@ class ConsentFormController extends Controller
         // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'is_public' => 'boolean',
             'movie_rating' => 'nullable|in:G,PG,PG-13,NC-17,Other',
             'movie_rating_other' => 'nullable|string|max:255',
             'follow_up_response' => 'nullable|string',
@@ -149,6 +152,7 @@ class ConsentFormController extends Controller
         // Update the consent form
         $consentForm->update([
             'name' => $validated['name'],
+            'is_public' => $validated['is_public'] ?? false,
             'movie_rating' => $validated['movie_rating'] ?? null,
             'movie_rating_other' => $validated['movie_rating_other'] ?? null,
             'follow_up_response' => $validated['follow_up_response'] ?? null,

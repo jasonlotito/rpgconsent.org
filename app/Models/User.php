@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
         'google_id',
@@ -80,5 +80,38 @@ class User extends Authenticatable
     public function activeConsentForm()
     {
         return $this->consentForms()->latest()->first();
+    }
+
+    /**
+     * Get validation rules for username.
+     *
+     * @param int|null $userId User ID to exclude from unique check (for updates)
+     * @return array
+     */
+    public static function usernameRules($userId = null): array
+    {
+        $uniqueRule = $userId
+            ? 'unique:users,username,' . $userId
+            : 'unique:users,username';
+
+        return [
+            'required',
+            'string',
+            'min:3',
+            'max:30',
+            'regex:/^[a-z0-9_-]+$/',
+            $uniqueRule,
+        ];
+    }
+
+    /**
+     * Get the route key for the model.
+     * This allows route model binding by username instead of ID.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'username';
     }
 }

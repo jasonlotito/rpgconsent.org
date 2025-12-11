@@ -23,6 +23,7 @@ class ConsentForm extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'is_public',
         'movie_rating',
         'movie_rating_other',
         'follow_up_response',
@@ -37,6 +38,7 @@ class ConsentForm extends Model
      */
     protected $casts = [
         'is_shared' => 'boolean',
+        'is_public' => 'boolean',
     ];
 
     /**

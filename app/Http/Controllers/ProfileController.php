@@ -31,7 +31,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit', [
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'google_id' => $user->google_id,
                 'google_avatar' => $user->google_avatar,
@@ -48,9 +48,12 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'username' => User::usernameRules($user->id),
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
+
+        // Convert username to lowercase
+        $validated['username'] = strtolower($validated['username']);
 
         $user->update($validated);
 

@@ -10,6 +10,7 @@ import AppLayout from '../../Layouts/AppLayout';
 export default function Create({ topics, movieRatings }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
+        is_public: false,
         movie_rating: '',
         movie_rating_other: '',
         follow_up_response: '',
@@ -133,6 +134,27 @@ export default function Create({ topics, movieRatings }) {
                                 <p className="mt-1 text-sm text-gray-500">
                                     Give your consent form a descriptive name to help you identify it later.
                                 </p>
+                            </div>
+
+                            {/* Public Toggle */}
+                            <div className="flex items-start">
+                                <div className="flex items-center h-5">
+                                    <input
+                                        id="is_public"
+                                        type="checkbox"
+                                        checked={data.is_public}
+                                        onChange={(e) => setData('is_public', e.target.checked)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    />
+                                </div>
+                                <div className="ml-3 text-sm">
+                                    <label htmlFor="is_public" className="font-medium text-gray-700">
+                                        Make this form public
+                                    </label>
+                                    <p className="text-gray-500">
+                                        Public forms will be visible on your public profile at /u/yourusername
+                                    </p>
+                                </div>
                             </div>
 
                             <div>

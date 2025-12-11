@@ -60,7 +60,7 @@ export default function AppLayout({ children }) {
                                         href="/profile"
                                         className="text-sm text-gray-700 hover:text-indigo-600 font-medium transition"
                                     >
-                                        {auth.user.name}
+                                        @{auth.user.username}
                                     </Link>
                                     <Link
                                         href="/logout"

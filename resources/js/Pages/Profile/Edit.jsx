@@ -13,7 +13,7 @@ export default function Edit({ user }) {
 
     // Form for updating profile information
     const profileForm = useForm({
-        name: user.name || '',
+        username: user.username || '',
         email: user.email || '',
     });
 
@@ -131,22 +131,28 @@ export default function Edit({ user }) {
                                 </p>
 
                                 <form onSubmit={handleProfileUpdate} className="space-y-6">
-                                    {/* Name Field */}
+                                    {/* Username Field */}
                                     <div>
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                            Name <span className="text-red-500">*</span>
+                                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                                            Username <span className="text-red-500">*</span>
                                         </label>
                                         <input
-                                            id="name"
+                                            id="username"
                                             type="text"
-                                            value={profileForm.data.name}
-                                            onChange={(e) => profileForm.setData('name', e.target.value)}
+                                            value={profileForm.data.username}
+                                            onChange={(e) => profileForm.setData('username', e.target.value.toLowerCase())}
                                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                             required
                                         />
-                                        {profileForm.errors.name && (
-                                            <p className="mt-1 text-sm text-red-600">{profileForm.errors.name}</p>
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            3-30 characters, lowercase letters, numbers, hyphens, and underscores only
+                                        </p>
+                                        {profileForm.errors.username && (
+                                            <p className="mt-1 text-sm text-red-600">{profileForm.errors.username}</p>
                                         )}
+                                        <p className="mt-2 text-xs text-gray-500">
+                                            Your public profile: <a href={`/u/${user.username}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-500">{window.location.origin}/u/{user.username}</a>
+                                        </p>
                                     </div>
 
                                     {/* Email Field */}
