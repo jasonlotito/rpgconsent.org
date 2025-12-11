@@ -32,12 +32,16 @@ return new class extends Migration
             // Comfort level: green (enthusiastic), yellow (okay if discussed), red (hard line)
             $table->enum('comfort_level', ['green', 'yellow', 'red']);
 
+            // Flag to distinguish custom entries from predefined topics
+            $table->boolean('is_custom')->default(false);
+
             $table->timestamps();
 
             // Indexes for performance
             $table->index('consent_form_id');
             $table->index(['consent_form_id', 'topic_category']);
             $table->index('comfort_level');
+            $table->index('is_custom');
 
             // Ensure unique responses per topic per form
             // Custom name to avoid MySQL's 64-character identifier limit
