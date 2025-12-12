@@ -28,6 +28,9 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        // Load social links ordered by the 'order' field
+        $socialLinks = $user->socialLinks()->orderBy('order')->get();
+
         return Inertia::render('Profile/Edit', [
             'user' => [
                 'id' => $user->id,
@@ -37,6 +40,7 @@ class ProfileController extends Controller
                 'google_avatar' => $user->google_avatar,
                 'has_password' => !empty($user->password),
             ],
+            'socialLinks' => $socialLinks,
         ]);
     }
 
@@ -163,6 +167,107 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.edit')
             ->with('success', 'Google account unlinked successfully!');
+    }
+
+    /**
+     * Store a new social media link.
+     */
+    public function storeSocialLink(Request $request)
+    {
+        $user = Auth::user();
+
+        // Check if user already has 5 links
+        if ($user->socialLinks()->count() >= 5) {
+            return back()->withErrors(['social_links' => 'You can only have up to 5 social media links.']);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:50',
+            'url' => 'required|url|max:255',
+        ]);
+
+        // Get the next order number
+        $maxOrder = $user->socialLinks()->max('order') ?? -1;
+
+        $user->socialLinks()->create([
+            'name' => $validated['name'],
+            'url' => $validated['url'],
+            'order' => $maxOrder + 1,
+        ]);
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Social media link added successfully!');
+    }
+
+    /**
+     * Update an existing social media link.
+     */
+    public function updateSocialLink(Request $request, $id)
+    {
+        $socialLink = \App\Models\UserSocialLink::findOrFail($id);
+
+        // Authorize the action
+        $this->authorize('update', $socialLink);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:50',
+            'url' => 'required|url|max:255',
+        ]);
+
+        $socialLink->update($validated);
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Social media link updated successfully!');
+    }
+
+    /**
+     * Delete a social media link.
+     */
+    public function deleteSocialLink($id)
+    {
+        $socialLink = \App\Models\UserSocialLink::findOrFail($id);
+
+        // Authorize the action
+        $this->authorize('delete', $socialLink);
+
+        $socialLink->delete();
+
+        // Reorder remaining links
+        $user = Auth::user();
+        $links = $user->socialLinks()->orderBy('order')->get();
+        foreach ($links as $index => $link) {
+            $link->update(['order' => $index]);
+        }
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Social media link deleted successfully!');
+    }
+
+    /**
+     * Reorder social media links.
+     */
+    public function reorderSocialLinks(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'links' => 'required|array',
+            'links.*.id' => 'required|exists:user_social_links,id',
+            'links.*.order' => 'required|integer|min:0',
+        ]);
+
+        // Update the order for each link
+        foreach ($validated['links'] as $linkData) {
+            $link = \App\Models\UserSocialLink::find($linkData['id']);
+
+            // Ensure user owns this link
+            if ($link && $link->user_id === $user->id) {
+                $link->update(['order' => $linkData['order']]);
+            }
+        }
+
+        return redirect()->route('profile.edit')
+            ->with('success', 'Social media links reordered successfully!');
     }
 }
 

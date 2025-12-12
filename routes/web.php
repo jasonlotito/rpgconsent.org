@@ -76,6 +76,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/link-google/callback', [ProfileController::class, 'linkGoogleCallback'])->name('profile.link-google.callback');
     Route::delete('/profile/unlink-google', [ProfileController::class, 'unlinkGoogle'])->name('profile.unlink-google');
 
+    // Social Media Links
+    Route::post('/profile/social-links', [ProfileController::class, 'storeSocialLink'])->name('profile.social-links.store');
+    Route::put('/profile/social-links/{id}', [ProfileController::class, 'updateSocialLink'])->name('profile.social-links.update');
+    Route::delete('/profile/social-links/{id}', [ProfileController::class, 'deleteSocialLink'])->name('profile.social-links.delete');
+    Route::post('/profile/social-links/reorder', [ProfileController::class, 'reorderSocialLinks'])->name('profile.social-links.reorder');
+
     // Consent Forms
     Route::resource('consent-forms', ConsentFormController::class);
 

@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage, router } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 
 /**
  * Profile Edit Page
  *
- * Allows users to manage their profile information, password, and linked accounts.
+ * Allows users to manage their profile information, password, linked accounts, and social media links.
  */
-export default function Edit({ user }) {
+export default function Edit({ user, socialLinks = [] }) {
     const [activeSection, setActiveSection] = useState('profile');
+    const [editingLinkId, setEditingLinkId] = useState(null);
     const { flash } = usePage().props;
 
     // Form for updating profile information
@@ -22,6 +23,12 @@ export default function Edit({ user }) {
         current_password: '',
         password: '',
         password_confirmation: '',
+    });
+
+    // Form for adding/editing social links
+    const socialLinkForm = useForm({
+        name: '',
+        url: '',
     });
 
     // Handle profile update
@@ -55,6 +62,53 @@ export default function Edit({ user }) {
     const handleUnlinkGoogle = () => {
         if (confirm('Are you sure you want to unlink your Google account?')) {
             useForm().delete('/profile/unlink-google', {
+                preserveScroll: true,
+            });
+        }
+    };
+
+    // Handle adding a new social link
+    const handleAddSocialLink = (e) => {
+        e.preventDefault();
+        socialLinkForm.post('/profile/social-links', {
+            preserveScroll: true,
+            onSuccess: () => {
+                socialLinkForm.reset();
+            },
+        });
+    };
+
+    // Handle editing a social link
+    const handleEditSocialLink = (link) => {
+        setEditingLinkId(link.id);
+        socialLinkForm.setData({
+            name: link.name,
+            url: link.url,
+        });
+    };
+
+    // Handle updating a social link
+    const handleUpdateSocialLink = (e) => {
+        e.preventDefault();
+        socialLinkForm.put(`/profile/social-links/${editingLinkId}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                socialLinkForm.reset();
+                setEditingLinkId(null);
+            },
+        });
+    };
+
+    // Handle canceling edit
+    const handleCancelEdit = () => {
+        setEditingLinkId(null);
+        socialLinkForm.reset();
+    };
+
+    // Handle deleting a social link
+    const handleDeleteSocialLink = (linkId, linkName) => {
+        if (confirm(`Are you sure you want to delete "${linkName}"?`)) {
+            router.delete(`/profile/social-links/${linkId}`, {
                 preserveScroll: true,
             });
         }
@@ -116,6 +170,16 @@ export default function Edit({ user }) {
                                 }`}
                             >
                                 Linked Accounts
+                            </button>
+                            <button
+                                onClick={() => setActiveSection('social')}
+                                className={`px-6 py-4 text-sm font-medium border-b-2 transition ${
+                                    activeSection === 'social'
+                                        ? 'border-indigo-600 text-indigo-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                            >
+                                Social Links
                             </button>
                         </nav>
                     </div>
@@ -349,6 +413,134 @@ export default function Edit({ user }) {
                                                 Google OAuth
                                             </li>
                                         )}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Social Links Section */}
+                        {activeSection === 'social' && (
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-900 mb-4">Social Media Links</h2>
+                                <p className="text-sm text-gray-600 mb-6">
+                                    Add up to 5 social media or external links to your public profile. These will be displayed on your public profile page.
+                                </p>
+
+                                {/* Links Count */}
+                                <div className="mb-6 text-sm text-gray-600">
+                                    <span className="font-medium">{socialLinks.length} of 5 links used</span>
+                                </div>
+
+                                {/* Existing Links */}
+                                {socialLinks.length > 0 && (
+                                    <div className="mb-6 space-y-3">
+                                        {socialLinks.map((link) => (
+                                            <div key={link.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                                <div className="flex-1">
+                                                    <div className="font-medium text-gray-900">{link.name}</div>
+                                                    <a
+                                                        href={link.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-sm text-indigo-600 hover:text-indigo-500 break-all"
+                                                    >
+                                                        {link.url}
+                                                    </a>
+                                                </div>
+                                                <div className="flex items-center gap-2 ml-4">
+                                                    <button
+                                                        onClick={() => handleEditSocialLink(link)}
+                                                        className="px-3 py-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteSocialLink(link.id, link.name)}
+                                                        className="px-3 py-1 text-sm text-red-600 hover:text-red-700 font-medium"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Add/Edit Form */}
+                                {(socialLinks.length < 5 || editingLinkId) && (
+                                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                                            {editingLinkId ? 'Edit Link' : 'Add New Link'}
+                                        </h3>
+                                        <form onSubmit={editingLinkId ? handleUpdateSocialLink : handleAddSocialLink} className="space-y-4">
+                                            <div>
+                                                <label htmlFor="link-name" className="block text-sm font-medium text-gray-700">
+                                                    Name <span className="text-red-500">*</span>
+                                                </label>
+                                                <input
+                                                    id="link-name"
+                                                    type="text"
+                                                    value={socialLinkForm.data.name}
+                                                    onChange={(e) => socialLinkForm.setData('name', e.target.value)}
+                                                    placeholder="e.g., Twitter, Discord, Portfolio"
+                                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                                    required
+                                                    maxLength={50}
+                                                />
+                                                {socialLinkForm.errors.name && (
+                                                    <p className="mt-1 text-sm text-red-600">{socialLinkForm.errors.name}</p>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor="link-url" className="block text-sm font-medium text-gray-700">
+                                                    URL <span className="text-red-500">*</span>
+                                                </label>
+                                                <input
+                                                    id="link-url"
+                                                    type="url"
+                                                    value={socialLinkForm.data.url}
+                                                    onChange={(e) => socialLinkForm.setData('url', e.target.value)}
+                                                    placeholder="https://example.com"
+                                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                                    required
+                                                    maxLength={255}
+                                                />
+                                                {socialLinkForm.errors.url && (
+                                                    <p className="mt-1 text-sm text-red-600">{socialLinkForm.errors.url}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                                <button
+                                                    type="submit"
+                                                    disabled={socialLinkForm.processing}
+                                                    className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {editingLinkId ? 'Update Link' : 'Add Link'}
+                                                </button>
+                                                {editingLinkId && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleCancelEdit}
+                                                        className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </form>
+                                    </div>
+                                )}
+
+                                {/* Info Box */}
+                                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                                    <h4 className="text-sm font-medium text-blue-900 mb-2">About Social Links:</h4>
+                                    <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                                        <li>Links will appear on your public profile page</li>
+                                        <li>You can add up to 5 links</li>
+                                        <li>Links open in a new tab for security</li>
+                                        <li>Common examples: Twitter, Discord, LinkedIn, Portfolio, Blog</li>
                                     </ul>
                                 </div>
                             </div>

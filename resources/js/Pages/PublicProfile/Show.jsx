@@ -3,9 +3,9 @@ import { Head, Link } from '@inertiajs/react';
 /**
  * Public Profile Page Component
  *
- * Displays a user's public consent forms.
+ * Displays a user's public consent forms and social media links.
  */
-export default function Show({ profileUser, publicForms }) {
+export default function Show({ profileUser, publicForms, socialLinks = [] }) {
     return (
         <>
             <Head title={`${profileUser.username}'s Profile`} />
@@ -42,6 +42,39 @@ export default function Show({ profileUser, publicForms }) {
 
                 {/* Content */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Social Links Section */}
+                    {socialLinks.length > 0 && (
+                        <div className="mb-8 bg-white rounded-lg shadow p-6">
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Connect</h2>
+                            <div className="flex flex-wrap gap-3">
+                                {socialLinks.map((link) => (
+                                    <a
+                                        key={link.id}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                                    >
+                                        <svg
+                                            className="h-4 w-4 mr-2 text-gray-500"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                            />
+                                        </svg>
+                                        {link.name}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mb-6">
                         <h2 className="text-2xl font-bold text-gray-900">Public Consent Forms</h2>
                         <p className="mt-1 text-sm text-gray-600">

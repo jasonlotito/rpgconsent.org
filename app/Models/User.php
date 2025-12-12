@@ -83,6 +83,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all social media links for this user.
+     */
+    public function socialLinks()
+    {
+        return $this->hasMany(UserSocialLink::class)->orderBy('order');
+    }
+
+    /**
      * Get validation rules for username.
      *
      * @param int|null $userId User ID to exclude from unique check (for updates)

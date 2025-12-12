@@ -25,6 +25,9 @@ class PublicProfileController extends Controller
         // Find user by username (case-insensitive)
         $user = User::where('username', strtolower($username))->firstOrFail();
 
+        // Get user's social links
+        $socialLinks = $user->socialLinks()->orderBy('order')->get();
+
         // Get only public consent forms with their responses
         $publicForms = $user->consentForms()
             ->where('is_public', true)
@@ -60,6 +63,7 @@ class PublicProfileController extends Controller
                 'google_avatar' => $user->google_avatar,
             ],
             'publicForms' => $formsData,
+            'socialLinks' => $socialLinks,
         ]);
     }
 
